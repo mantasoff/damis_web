@@ -52,27 +52,21 @@ int main()
     if (!ErrorResponse::isFaultFound()) //remove error checking if clean data is called
     {
         ValidateParams *validate = new ValidateParams(dFile); //when call clean data do not validate file, i.e also pass FALSE otherwise validate->isValid may return false
-        //validate->normData(false, 0, 1, 1);
-        //validate->cleanData(1);
-        //validate->filterData(true, 3, 4, 1);
-        //validate->splitData(false, 10, 20, 1);
-        //validate->transposeData(1);
-        //validate->statPrimitives(10);
+        validate->normData(false, 0, 1, 1);
+        validate->cleanData(1);
+        validate->filterData(true, 3, 4, 1);
+        validate->splitData(false, 10, 20, 1);
+        validate->transposeData(1);
+        validate->statPrimitives(10);
         validate->pca(false,2,2);
-        //validate->smacofMds(3,4,0.2,true,2,7);
-        //validate->dma(2,10,0.88,1,4);
-
-        //validate->relMds()
-        //validate->relMds(2,10,0.0004,10,1,1);
-        //validate->samann(8,7,88,-7,0.1478,8,7);
-        // validate->somMds(4,3,5,8,0.0001,8,-4);
-        //validate->somMds(4,5,4,100,0.0001,2,1);
-        //validate->som()
-        //validate->som(4,4,8,1,5);
-        //validate->kMeans(100,2,9);
-        //validate->mlp(2,2,10,false, 1, 100, 1);
-        //validate->decForest(0.63, 80, 20, 8);
-
+        validate->smacofMds(3,4,0.2,true,2,7);
+        validate->dma(2,10,0.88,1,4);
+        validate->relMds(2,10,0.0004,10,1,1);
+        validate->samann(8,7,88,-7,0.1478,8,7);
+        validate->somMds(4,3,5,8,0.0001,8,-4);
+        validate->somMds(4,5,4,100,0.0001,2,1);
+        validate->som(4,4,8,1,5);
+        validate->kMeans(100,2,9);
 
         if (validate->isValid())
         {
