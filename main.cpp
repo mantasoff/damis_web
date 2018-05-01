@@ -71,52 +71,26 @@ int main()
         if (validate->isValid())
         {
             // Preprocess *dRun = new Preprocess (dFile);
-
-
             clock_t start;
-            //long double duration;
 
             //LOG(INFO)<<"Starting clock";
             start = clock();
-            //dRun->cleanData();
-            //dRun->transposeData();
-            //dRun->splitData(true, 10, 20);
-            //dRun->normData(false, 0, 1);
-            //dRun->filterData(false, 3, 4);
 
-            //Statistics *dStat = new Statistics (dFile);
-            //dStat->statPrimitives();
+            Statistics *dStat = new Statistics (dFile);
+            dStat->statPrimitives();
 
-            DimensionReduction *dRun = new DimensionReduction(1, 10, dFile);
-             dRun->runPCA(false, 2);
-            //dRun->runDMA(2,10,0.0088, 1);
-            //void relMds(int d, int maxIteration, double eps, double noOfBaseVectors, int selStrategy, int maxCalcTime);
-            // dRun->runRELATIVEMDS(2,1,0.0004,10,1);
-            // dReduction->runSAMANN(2,100,10,2,0.1);
-            // dReduction->runSMACOFMDS(2,100,0.00001,true);
-            // dReduction->runSOMMDS(5,5,2,100,0.0001,3);
+        
 
-          // ClassificationGrouping *dRun = new ClassificationGrouping(1,10, dFile);
-            //dRun->runSOM(3,3,2);
-            //dRun->runKMEANS(100, 2);
-            //dRun->runMLP(2, 2, 80, 100, false);
-          //  dRun->runDecForest(0.63, 80, 20, 75);
+          ClassificationGrouping *dRun = new ClassificationGrouping(1,10, dFile);
+            dRun->runSOM(3,3,2);
+            dRun->runKMEANS(100, 2);
+            dRun->runMLP(2, 2, 80, 100, false);
+            dRun->runDecForest(0.63, 80, 20, 75);
 
-
-            //          std::cout1 << (clock() - start) / (double) CLOCKS_PER_SEC;
 
             std::string response = dRun->outFile->getHttpPath();
             std::string statFile = dRun->statFile->getFilePath();
-            //std::string altFile = dRun->altOutFile->getFilePath();
-
-            // double algorithmError = HelperMethods::getAttributeValue(dRun->statFile->getFilePath(), "algError");
-
-            //returns only cluster calculataion time
-            // double calcTime  = HelperMethods::getAttributeValue(dRun->statFile->getFilePath(), "calcTime");
-
-            //overall time for request serving
-            //response->calcTime = (clock() - start) / (double) CLOCKS_PER_SEC;
-            //HelperMethods::deleteFile(dRun->outFile->getFilePath());
+           
             HelperMethods::deleteFile(statFile);
 
         }
