@@ -47,7 +47,7 @@ int main()
 
     // LOG(INFO) << "Invoking service operation";
 
-    /*InitDamisService *dFile = new InitDamisService("http://158.129.140.134:8087/damis/data/err/_forCalculus_vmNddeGiVIkqQKOxGmTF.arff", "_input_"); //if clen data -> pass validateFile = false
+    InitDamisService *dFile = new InitDamisService("http://srv.rls.lt/damis/test.arff", "_input_"); //if clen data -> pass validateFile = false
 
     if (!ErrorResponse::isFaultFound()) //remove error checking if clean data is called
     {
@@ -130,7 +130,7 @@ int main()
             return -1; //fault was found
     }
     else
-        return -1; //fault was found*/
+        return -1; //fault was found
 
 
     //std::cout1 << "Hello world!" << std::endl;
