@@ -81,11 +81,10 @@ int main()
             dRun->runMLP(2, 2, 80, 100, false);
             dRun->runDecForest(0.63, 80, 20, 75);
 
-            //          std::cout1 << (clock() - start) / (double) CLOCKS_PER_SEC;
+            //std::cout1 << (clock() - start) / (double) CLOCKS_PER_SEC;
 
             std::string response = dRun->outFile->getHttpPath();
             std::string statFile = dRun->statFile->getFilePath();
-            //std::string altFile = dRun->altOutFile->getFilePath();
 
             HelperMethods::deleteFile(statFile);
 
