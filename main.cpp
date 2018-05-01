@@ -1,15 +1,11 @@
 #define _ELPP_THREAD_SAFE
 #define _ELPP_STL_LOGGING
 #define _ELPP_NO_DEFAULT_LOG_FILE
-
 #include "ServiceSettings.h"
-
 #include "gsoap/soapDAMISService.h"
 #include "gsoap/soapH.h"
 #include "gsoap/DAMIS.nsmap"
-
 #include "CGIvars/getcgivars.h"
-
 #include "logging/easylogging++.h"
 #include "InitDamisService.h"
 #include "ValidateParams.h"
@@ -19,7 +15,6 @@
 #include "DimensionReduction.h"
 #include "ClassificationGrouping.h"
 #include "HelperMethods.h"
-
 
 #include <iostream>
 
@@ -71,15 +66,14 @@ int main()
         if (validate->isValid())
         {
             // Preprocess *dRun = new Preprocess (dFile);
+
+
             clock_t start;
+            //long double duration;
 
             //LOG(INFO)<<"Starting clock";
             start = clock();
-
-            Statistics *dStat = new Statistics (dFile);
-            dStat->statPrimitives();
-
-        
+           
 
           ClassificationGrouping *dRun = new ClassificationGrouping(1,10, dFile);
             dRun->runSOM(3,3,2);
@@ -87,10 +81,12 @@ int main()
             dRun->runMLP(2, 2, 80, 100, false);
             dRun->runDecForest(0.63, 80, 20, 75);
 
+            //          std::cout1 << (clock() - start) / (double) CLOCKS_PER_SEC;
 
             std::string response = dRun->outFile->getHttpPath();
             std::string statFile = dRun->statFile->getFilePath();
-           
+            //std::string altFile = dRun->altOutFile->getFilePath();
+
             HelperMethods::deleteFile(statFile);
 
         }
@@ -99,9 +95,6 @@ int main()
     }
     else
         return -1; //fault was found
-
-
-    //std::cout1 << "Hello world!" << std::endl;
 
 
     LOG(INFO) <<"Service has been invoked";
@@ -166,14 +159,13 @@ int DAMISService::PCA(std::string X, bool projType, double d, int maxCalcTime, s
 
     if (!ErrorResponse::isFaultFound())
     {
-        //LOG(INFO)<<"Instantiating ValidateParams object";
+        
         ValidateParams *validate = new ValidateParams(dFile);
         //   LOG(INFO)<<"Validating passed PCA params";
 
-        //void pca(bool projType, double d, int maxCalcTime);
-        //validate->pca(projType, d, maxCalcTime);
+        
         validate->pca(projType, d, maxCalcTime);
-        //ValidateParams::pca(bool projType, double d, int maxCalcTime);
+       
 
         if (validate->isValid())
         {
@@ -1040,10 +1032,7 @@ int DAMISService::CLEANDATA(std::string X, int maxCalcTime, struct Damis__CLEAND
         struct Damis__CLEANDATAResponse *response = new Damis__CLEANDATAResponse();
 
         response->Y = dPrep->outFile->getHttpPath();
-        //response->algorithmError = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "algError");
-
-        //returns only cluster calculataion time
-        //response->calcTime  = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "calcTime");
+       
 
         //overall time for request serving
         response->calcTime = (clock() - start) / (double) CLOCKS_PER_SEC;
@@ -1060,14 +1049,7 @@ int DAMISService::CLEANDATA(std::string X, int maxCalcTime, struct Damis__CLEAND
         sendError(this->soap);
         return SOAP_ERR;
     }
-    /*   }
-       else
-           {
-               //got error send error message
-               LOG(INFO)<<"Got error on DAMIS initialization phase, return SOAP_ERR";
-               sendError(this->soap);
-               return SOAP_ERR;
-           }*/
+   
     LOG(INFO)<<"Request served, returning SOAP_OK";
     return SOAP_OK;
 }
@@ -1102,19 +1084,11 @@ int DAMISService::FILTERDATA(std::string X, bool retFilteredData, double zValue,
             LOG(INFO)<< "Method RUN";
             dPrep->filterData(retFilteredData, zValue, attrIndex);
 
-            //DimensionReduction *dReduction = new DimensionReduction(1, maxCalcTime, dFile);
-
-
-            // dReduction->runSOMMDS(rows, columns,eHat, mdsIteration, eps, mdsProjection);
 
             LOG(INFO)<<"Creating parameter response structure";
             struct Damis__FILTERDATAResponse *response = new Damis__FILTERDATAResponse();
 
             response->Y = dPrep->outFile->getHttpPath();
-            //response->algorithmError = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "algError");
-
-            //returns only cluster calculataion time
-            //response->calcTime  = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "calcTime");
 
             //overall time for request serving
             response->calcTime = (clock() - start) / (double) CLOCKS_PER_SEC;
@@ -1173,20 +1147,10 @@ int DAMISService::SPLITDATA(std::string X, bool reshufleObjects, double firstSub
             LOG(INFO)<< "Method RUN";
             dPrep->splitData(reshufleObjects, firstSubsetPerc, secondSubsetPerc);
 
-            //DimensionReduction *dReduction = new DimensionReduction(1, maxCalcTime, dFile);
-
-
-            // dReduction->runSOMMDS(rows, columns,eHat, mdsIteration, eps, mdsProjection);
-
             LOG(INFO)<<"Creating parameter response structure";
             struct Damis__SPLITDATAResponse *response = new Damis__SPLITDATAResponse();
 
             response->Y = dPrep->outFile->getHttpPath();
-            response->Yalt = dPrep->altOutFile->getHttpPath();
-            //response->algorithmError = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "algError");
-
-            //returns only cluster calculataion time
-            //response->calcTime  = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "calcTime");
 
             //overall time for request serving
             response->calcTime = (clock() - start) / (double) CLOCKS_PER_SEC;
@@ -1247,18 +1211,12 @@ int DAMISService::TRANSPOSEDATA(std::string X, int maxCalcTime, struct Damis__TR
 
             //DimensionReduction *dReduction = new DimensionReduction(1, maxCalcTime, dFile);
 
-
             // dReduction->runSOMMDS(rows, columns,eHat, mdsIteration, eps, mdsProjection);
 
             LOG(INFO)<<"Creating parameter response structure";
             struct Damis__TRANSPOSEDATAResponse *response = new Damis__TRANSPOSEDATAResponse();
 
             response->Y = dPrep->outFile->getHttpPath();
-            // response->Y = dPrep->altOutFile->getHttpPath();
-            //response->algorithmError = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "algError");
-
-            //returns only cluster calculataion time
-            //response->calcTime  = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "calcTime");
 
             //overall time for request serving
             response->calcTime = (clock() - start) / (double) CLOCKS_PER_SEC;
@@ -1266,7 +1224,6 @@ int DAMISService::TRANSPOSEDATA(std::string X, int maxCalcTime, struct Damis__TR
             _param_1 = *response;
 
             //delete fileWith the statistics data
-            // HelperMethods::deleteFile(dReduction->statFile->getFilePath());
         }
         else
         {
@@ -1326,11 +1283,7 @@ int DAMISService::NORMDATA(std::string X, bool normMeanStd, double a, double b, 
             struct Damis__NORMDATAResponse *response = new Damis__NORMDATAResponse();
 
             response->Y = dPrep->outFile->getHttpPath();
-            // response->Y = dPrep->altOutFile->getHttpPath();
-            //response->algorithmError = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "algError");
-
-            //returns only cluster calculataion time
-            //response->calcTime  = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "calcTime");
+    
 
             //overall time for request serving
             response->calcTime = (clock() - start) / (double) CLOCKS_PER_SEC;
