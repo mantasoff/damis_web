@@ -28,12 +28,10 @@ CallCalculus::CallCalculus(int p, int maxCalcTime, InitDamisService* initFile):S
     this->maxCalculationTime = maxCalcTime; // not used if qsub is not called
 }
 
-
 CallCalculus::~CallCalculus()
 {
 
 }
-
 
 /**
  * Implements run of the algorithm
@@ -45,8 +43,7 @@ void CallCalculus::run()
     //DamisFile *algStat = new DamisFile ("_algRunStat_"); //temporary data file that hold data statistitics abaut algorithm run
     //variable ir ->>>>>statFile
 
-    // std::vector<std::string> dummy;
-    // dummy.reserve(0); //pass dummy vector to write function since no class attribute after  are left
+    
     // save data to temporary file
     writeDataToFile(cFile->getFilePath(), prepareDataSection(serveFile->getDoubleData(), serveFile->getStringClass()), prepareAttributeSection(serveFile->getAttributeName(),serveFile->getAttributeType(), serveFile->getStringClassAttribute()));
 
@@ -59,22 +56,6 @@ void CallCalculus::run()
 
         //LOG(INFO) << "CALL: " << exeParams;
         //LOG(INFO)
-
-        ///Implementation for windows run
-        //    std::string callCalc = ServiceSettings::pathToMPIExecutable + " -n " + std::to_string(reqProcessors) + " -wdir " + ServiceSettings::workingDirMPI + " " + ServiceSettings::pathToAlgorithmsExe + exeParams + " -i " +cFile->getFilePath() + " " + " -o " + outFile->getFilePath() + " " + " -s " + statFile->getFilePath();
-
-        /* STARTUPINFO si = { sizeof(si) };
-         PROCESS_INFORMATION  pi;
-         std::vector<TCHAR> V( callCalc.length() + 1);
-         for (int i=0;i< (int) callCalc.length();i++)
-             V[i] = callCalc[i];
-
-         CreateProcess(NULL, &V[0],0, 0, FALSE, 0, 0, 0, &si, &pi);
-         WaitForSingleObject(pi.hProcess, INFINITE);
-         CloseHandle(pi.hProcess);
-         CloseHandle(pi.hThread);*/
-        ///Implementation for linux run
-     //   char * tmpNoOfProc = const_cast<char*>(std::to_string(static_cast<long long>(reqProcessors)).c_str());
         //creating bash script with the parameters
         callCalc = ServiceSettings::pathToMPIExecutable + " -np " + std::to_string( static_cast<long long> (reqProcessors)) + " -wdir " + ServiceSettings::workingDirMPI + " " + ServiceSettings::pathToAlgorithmsExe + exeParams + " -i " +cFile->getFilePath() + " -o " + outFile->getFilePath() + " -s " + statFile->getFilePath();
 
@@ -141,26 +122,7 @@ void CallCalculus::run()
                     std::string jobID = line_from_file.substr(foundJobIDStart, foundJobIDEnd - foundJobIDStart);
                     LOG(INFO) << "Job ID is " << jobID;
 
-                   /* std::string runCommand = "qstat -j " + jobID + " 2>&-"; //force only stderr to null
-                    char * command = const_cast<char*>(runCommand.c_str());
-
-                    std::string qstatus = "";
-                    do
-                    {
-                        system("sleep 10");
-                        qstatus = getOutput(command);
-                        if (qstatus == "ERR")
-                        {
-                            LOG(ERROR) << "Error getting pipe to "<< runCommand << " killing job";
-                            ErrorResponse::setFaultDetail("Error job status monitoring, killing job");
-                            //error getting pipe
-                            runCommand = "qdel " + jobID + " &>/dev/null"; //forse all output to null
-                            command = const_cast<char*>(runCommand.c_str());
-                            system (command);
-                            break;
-                        }
-                    }
-                    while (qstatus!=""); // indicates that the job has been finished*/
+              
 
                     bool stopChecking = false;
 					std::string oF = outFile->getFilePath();
@@ -242,20 +204,7 @@ void CallCalculus::run()
 					}
 					while (!stopChecking);
 
-                    //chek if error file has been created if so return its content otherwise return links to result files
-                  /*  std::ifstream outFileE(qsubOutE);
-                   // LOG(INFO) << "Cheking if " << jobID << " generated error file";
-                    if (outFileE.good())
-                    {
-                        LOG(ERROR) << "Error file "<< qsubOutE << " generated, returning error to the client";
-                        ErrorResponse::setFaultDetail("Error runnig algorithm");
-                        while (std::getline(outFileE, line_from_file))
-                        {
-                            ErrorResponse::setFaultDetail(line_from_file);
-                        }
-                      // parse content of the file qsubOutE to error strem and return run error
-                    }
-                    outFileE.close();*/
+                
                 }
                 else
                 {
