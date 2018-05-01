@@ -882,10 +882,7 @@ int DAMISService::KMEANS(std::string X, int kMax, int maxIteration, int maxCalcT
                 struct Damis__KMEANSResponse *response = new Damis__KMEANSResponse();
 
                 response->Y = dReduction->outFile->getHttpPath();
-                // response->algorithmError = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "algError");
-
-                //returns only cluster calculataion time
-                //response->calcTime  = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "calcTime");
+                
 
                 //overall time for request serving
                 response->calcTime = (clock() - start) / (double) CLOCKS_PER_SEC;
@@ -930,7 +927,7 @@ int DAMISService::STATPRIMITIVES(std::string X, int maxCalcTime, struct Damis__S
     LOG(INFO) << "Initiating STATPRIMITIVES serve request";
     LOG(INFO) <<"Got parameters: "<<"X - "<<X<<"; maxCalcTime - "<< maxCalcTime;
     clock_t start;
-    //  long double duration;
+    
 
     //LOG(INFO)<<"Starting clock";
     start = clock();
@@ -964,10 +961,7 @@ int DAMISService::STATPRIMITIVES(std::string X, int maxCalcTime, struct Damis__S
             struct Damis__STATPRIMITIVESResponse *response = new Damis__STATPRIMITIVESResponse();
 
             response->Y = dStat->outFile->getHttpPath();
-            //response->algorithmError = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "algError");
-
-            //returns only cluster calculataion time
-            //response->calcTime  = HelperMethods::getAttributeValue(dReduction->statFile->getFilePath(), "calcTime");
+        
 
             //overall time for request serving
             response->calcTime = (clock() - start) / (double) CLOCKS_PER_SEC;
@@ -1009,8 +1003,7 @@ int DAMISService::CLEANDATA(std::string X, int maxCalcTime, struct Damis__CLEAND
     LOG(INFO)<<"Instantiating InitDamisService object";
     InitDamisService *dFile = new InitDamisService (X, "_input_", false); //passing also false because we do not need to valida the file
 
-    /* if (!ErrorResponse::isFaultFound())
-     {*/
+   
     // LOG(INFO)<<"Instantiating ValidateParams object";
     ValidateParams *validate = new ValidateParams(dFile);
     // LOG(INFO)<<"Validating passed CLEANDATA params";
