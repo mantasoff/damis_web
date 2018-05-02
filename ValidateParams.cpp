@@ -34,11 +34,9 @@ ValidateParams::ValidateParams(InitDamisService* inFile)
  * Empty destructor
  */
 ValidateParams::~ValidateParams()
-{
+= default;
 
-}
-
-	//dimmension reduction
+//dimmension reduction
 /**
  * Function that checks if pca parameters are OK
  */
@@ -177,16 +175,8 @@ void ValidateParams::mlp(int h1pNo, int h2pNo, double qty, bool validationMethod
 
    ValidateParams::validateGreatherThan(maxCalcTime, 0, "maxCalcTime", false);
 
-   if (!validationMethod)
-        ValidateParams::validateInterval(qty, 0, 100, "qty", false, false );
-    else
-        ValidateParams::validateInterval(qty, 2, ValidateParams::inFile->getNumberOfObjects(), "qty", true, true );
-
-  // ValidateParams::validateInterval(dT, 1, 100, "dT");
-
-  // ValidateParams::validateInterval(wDecay, 0.0000001, 100, "wDecay");
-
-   // ValidateParams::validateGreatherThan(100, (dL + dT), "(dL + dT)", true, true);
+    !validationMethod ? ValidateParams::validateInterval(qty, 0, 100, "qty", false, false )
+                      : ValidateParams::validateInterval(qty, 2, ValidateParams::inFile->getNumberOfObjects(), "qty", true, true );
 
     ValidateParams::validateInterval(p, 1, ServiceSettings::noOfProcessors, "p");
 
@@ -196,7 +186,6 @@ void ValidateParams::mlp(int h1pNo, int h2pNo, double qty, bool validationMethod
 
     ValidateParams::validateGreatherThan(h2pNo, 0, "h2pNo", true);
 
-   // ValidateParams::validateGreatherThan(kFold, 1, "kFold", true);
     if (!ValidateParams::inFile->isClassFound())
     {
         ErrorResponse::setFaultDetail("File is not valid. No class attribute");
@@ -237,7 +226,6 @@ void ValidateParams::kMeans(int maxIteration, int kMax, int maxCalcTime)
     LOG(INFO) << "Validating KMEANS parameter kMax - "<< kMax << "  maxIteration - " << maxIteration << " maxCalcTime - " << maxCalcTime;
 
     ValidateParams::validateInterval(kMax, 1, ValidateParams::inFile->getNumberOfObjects(), "kMax");
-    //ValidateParams::validateInterval(kMax, 1, 100, "kMax");
 
     ValidateParams::validateInterval(maxIteration, 1, 10000, "maxIteration");
 
@@ -351,7 +339,7 @@ bool ValidateParams::validateInterval(double val, double lBound, double uBound, 
             return false;
         }
     }
-    else if (lowerInclusive && !upperInclusive)
+    else if (lowerInclusive)
     {
         if (!(val >= lBound && val < uBound))
         {
@@ -361,26 +349,27 @@ bool ValidateParams::validateInterval(double val, double lBound, double uBound, 
             return false;
         }
     }
-    else if (!lowerInclusive && upperInclusive)
-    {
-        if (!(val > lBound && val <= uBound))
-        {
-            ErrorResponse::setFaultDetail("Parameter is not valid. " + printVal + " must be in interval (" + bufferlBound +"; "+ bufferuBound + "]");
-            LOG(ERROR) << "Parameter "<< printVal << " - "<< val <<" is not valid. " << printVal << " must be in interval (" <<lBound <<"; " << uBound << "]";
+    else if (!upperInclusive) {
+        if (!(val > lBound && val < uBound)) {
+            ErrorResponse::setFaultDetail(
+                    "Parameter is not valid. " + printVal + " must be in interval (" + bufferlBound + "; " +
+                    bufferuBound + ")");
+            LOG(ERROR) << "Parameter " << printVal << " - " << val << " is not valid. " << printVal
+                       << " must be in interval (" << lBound << "; " << uBound << ")";
+            ValidateParams::methodParamsValid = false;
+            return false;
+        }
+    } else {
+        if (!(val > lBound && val <= uBound)) {
+            ErrorResponse::setFaultDetail(
+                    "Parameter is not valid. " + printVal + " must be in interval (" + bufferlBound + "; " +
+                    bufferuBound + "]");
+            LOG(ERROR) << "Parameter " << printVal << " - " << val << " is not valid. " << printVal
+                       << " must be in interval (" << lBound << "; " << uBound << "]";
             ValidateParams::methodParamsValid = false;
             return false;
         }
     }
-     else
-        {
-        if (!(val > lBound && val < uBound))
-        {
-            ErrorResponse::setFaultDetail("Parameter is not valid. " + printVal + " must be in interval (" + bufferlBound +"; "+ bufferuBound + ")");
-            LOG(ERROR) << "Parameter "<< printVal << " - "<< val <<" is not valid. " << printVal << " must be in interval (" <<lBound <<"; " << uBound << ")";
-            ValidateParams::methodParamsValid = false;
-            return false;
-        }
-        }
         return true;
 }
 
@@ -397,7 +386,7 @@ bool ValidateParams::validateGreatherThan(double val, double lBound, std::string
 
     if (lowerInclusive)
     {
-        if (!(val >= lBound ))
+        if (val < lBound)
         {
             if (inverse)
                 {
@@ -415,7 +404,7 @@ bool ValidateParams::validateGreatherThan(double val, double lBound, std::string
     }
     else
     {
-        if (!(val > lBound ))
+        if (val <= lBound)
         {
             if (inverse)
                 {
@@ -452,75 +441,8 @@ bool ValidateParams::isValid()
 /**
  * Validates the input arff file;
  */
-/*void ValidateParams::validateFile()
-{
-    LOG(INFO) << "Initiating file " << ValidateParams::initDamisServFile->getFilePath() << " data validation";
 
-    int dataRows = ValidateParams::initDamisServFile->getRawDataStringFormat().size();
-    int dataColumns = ValidateParams::initDamisServFile->getRawDataStringFormat().at(0).size();
-    bool isFileValid = true;
 
-    bool classMatch;
-    std::string dataVal;
-   // const char *str;
-    char *err;
-    double x;
 
-    if ( dataRows > 0 && dataColumns > 0)
-    {
-        for (int i = 0; i < dataRows; i++ )
-        {
-          //  skipObject = false; //if data values are ok
-            classMatch = false; //if match found
-
-            for (int j = 0; j < dataColumns; j++)
-            {
-                    dataVal = ValidateParams::initDamisServFile->getRawDataStringFormat().at(i).at(j);
-                    //str = dataVal.c_str();
-                   // char *err;
-                    x = strtod(dataVal.c_str(), &err);
-
-                    if (!(*err == 0 && dataVal !=""))
-                    {
-                        isFileValid = false;
-                        ErrorResponse::setFaultDetail("File is not valid, found non numeric value \\ " + std::string(ValidateParams::initDamisServFile->getRawDataStringFormat().at(i).at(j)) + " \\ at line " + std::to_string(static_cast<long long>(i)) + std::string("at position ") + std::to_string (static_cast<long long>(j)) + std::string(" "));
-                        LOG(ERROR) << "File is not valid (skipping object), found non numeric value \\ " << ValidateParams::initDamisServFile->getRawDataStringFormat().at(i).at(j) << " \\ at line " <<i <<" at position " <<j;
-                    }
-            }
-            if (ValidateParams::initDamisServFile->isClassFound())
-            {
-                for (unsigned int cL = 0; cL < ValidateParams::initDamisServFile->getClasses().size(); cL++)
-                {
 
 // TODO (Povilas#1#): Palyginti didziosiomis arba mazosiomis raidemis ...
-//
-                    if (ValidateParams::initDamisServFile->getClassAttribute().at(i) ==  ValidateParams::initDamisServFile->getClasses().at(cL))
-                    {
-                        classMatch = true;
-                        break;
-                    }
-                }
-                if (!classMatch)
-                {
-                    isFileValid = false;
-                    ErrorResponse::setFaultDetail(std::string("File is not valid. Data section has unknown class ") + std::string (ValidateParams::initDamisServFile->getClassAttribute().at(i)) + std::string(" at line ") + std::to_string(static_cast<long long>(i)) + std::string(" "));
-                    LOG(ERROR) << "File is not valid. Data section line " << i << " contains unknown class " << ValidateParams::initDamisServFile->getClassAttribute().at(i);
-                }
-            }
-        }
-    }
-
-    ValidateParams::fileIsValid = isFileValid;
-
-    if (!isFileValid)
-    {
-        LOG(ERROR) << "File " << ValidateParams::initDamisServFile->getFilePath() << " is not valid";
-
-        // must comment since deletion is moved to ValidateParams::isValid function
-        HelperMethods::deleteFile(ValidateParams::initDamisServFile->getFilePath());
-    }
-    else
-    {
-        LOG(INFO) << "File " << ValidateParams::initDamisServFile->getFilePath() << " valid (OK)";
-    }
-}*/
