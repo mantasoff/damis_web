@@ -142,15 +142,14 @@ int main()
     //At each service invoke check and delete old file if they are present
     HelperMethods::deleteOldFiles();
 
-
-    bool parseWSDL = false;
     char **cgivars = NULL;
-    int i;
 
     cgivars = getcgivars();
 
     if (cgivars != NULL)
     {
+        bool parseWSDL = false;
+        int i;
         LOG(INFO)<<"Checking CGI variables if it is WSDL content request";
         for (i = 0; cgivars[i]; i += 2)
             if (std::string(cgivars[i]) == "wsdl")
